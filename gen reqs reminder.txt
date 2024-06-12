@@ -1,1 +1,1 @@
-pipreqs --force --ignore .venv 
+pipreqs "C:\Users\Emo PC\Desktop\DZ" --force --ignore .venv 
