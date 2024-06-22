@@ -411,9 +411,14 @@ def search_string():
                     pass_in_time_dupechecker = True
 
                 if week is None:
-                    week = get_week(date)
-                    day_of_week = get_date_offset(date, week)[0]
-                    conn.rollback()
+                    try:
+                        week = get_week(date)
+                        day_of_week = get_date_offset(date, week)[0]
+                        conn.rollback()
+                    except psycopg2.errors.InvalidDatetimeFormat:
+                        conn.rollback()
+                        abort(414)
+
                 try:
                     dupechecker2(result, week, day_of_week, pass_in_time_dupechecker, time_for_dupechecker)
                 except (psycopg2.errors.InvalidDatetimeFormat, psycopg2.errors.DatetimeFieldOverflow):
@@ -752,6 +757,38 @@ def entry():
             return redirect(url_for("search_string"))
 
     default_week_end = min(int(formatted_week) + 1, 13)
+
+    try:
+        if session['time_end_e'] is None:
+            pass
+    except KeyError:
+        session['time_end_e'] = ''
+    try:
+        if session['spec_e'] is None:
+            pass
+    except KeyError:
+        session['spec_e'] = ''
+    try:
+        if session['group_e'] is None:
+            pass
+    except KeyError:
+        session['group_e'] = ''
+    try:
+        if session['subj_e'] is None:
+            pass
+    except KeyError:
+        session['subj_e'] = ''
+    try:
+        if session['type_r_e'] is None:
+            pass
+    except KeyError:
+        session['type_r_e'] = ''
+    try:
+        if session['name_r_e'] is None:
+            pass
+    except KeyError:
+        session['name_r_e'] = ''
+
     return render_template('entry.html', default_room=room_number, default_time1=formatted_time1,
                            default_time2=session['time_end_e'], default_week_start=formatted_week,
                            default_day_of_week_entry=default_day_of_week_entry,
