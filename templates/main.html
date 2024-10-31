@@ -25,7 +25,7 @@
 				<input type="text" name="room_number" value="{{ default_room_main }}" maxlength="10" size="20" ><br><br>
 				
 				<label>Дата (Ден / Месец / Година)</label><span style="color:blue">*</span><br>
-					<input type="number" max=31 name="date_day" value="{{ default_day_main }}" maxlength="2" size="10" >
+					<input type="number" max=31 min=1 name="date_day" value="{{ default_day_main }}" maxlength="2" size="10" >
 					<label>-</label>
 					<select name="date_month" id="date_month">
 						<option selected="selected" value="{{ default_month_main }}">{{ default_month_main_label }}</option>

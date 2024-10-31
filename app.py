@@ -114,10 +114,6 @@ def search_db(room_number, time, date=None, week=None, date_offset=None):
 
     sql = sql + "AND week='%s' " % week
 
-    # print("results")
-    # print(results[0])
-    # print(date)
-
     if date_offset is None:
         date_offset = get_date_offset(str(date), week)
         sql = sql + "AND day_of_week='%s' " % date_offset[0]
@@ -202,10 +198,8 @@ def dupechecker(room_number, time_start, time_end, formatted_week, day_of_week, 
             if long_message:
                 extra_error = str(formatted_week)
                 abort(411)
-                # abort(400, 'Заета зала! ' + 'Седмица ' + str(formatted_week))
             else:
                 abort(411)
-                # abort(400, 'Заета зала!')
 
 
 def dupechecker2(room_number, formatted_week, day_of_week, check_time=False, time=None):
@@ -396,13 +390,9 @@ def search_string():
                 #     abort(400, 'Непопълнено поле, или дата извън учебната година!')
 
                 sql_find_rooms = "SELECT room_number FROM rooms ORDER BY room_number"
-                print('sql_find_rooms')
-                print(sql_find_rooms)
                 cur.execute(sql_find_rooms)
                 results = cur.fetchall()
                 result = results[0]
-                print('result')
-                print(result)
 
                 time_for_dupechecker = None
                 pass_in_time_dupechecker = False
@@ -415,7 +405,7 @@ def search_string():
                         week = get_week(date)
                         day_of_week = get_date_offset(date, week)[0]
                         conn.rollback()
-                    except psycopg2.errors.InvalidDatetimeFormat:
+                    except (psycopg2.errors.InvalidDatetimeFormat, TypeError):
                         conn.rollback()
                         abort(414)
 
@@ -444,7 +434,6 @@ def search_string():
                 except (psycopg2.Error, UnboundLocalError, TypeError):
                     conn.rollback()
                     abort(414)
-                    # abort(400, 'Непопълнено поле, или дата извън учебната година!')
 
             if time == ':':
                 time = 'Цял ден'
@@ -503,13 +492,9 @@ def search_string():
                 # sql_table = session['week']
 
             sql_remove = """DELETE FROM all_week_data WHERE all_week_data.id=%s """ % to_remove[0][9]
-            print("remove sql")
-            print(sql_remove)
-            print("to remove")
-            print(to_remove)
-
             cur.execute(sql_remove)
             conn.commit()
+
             print('REMOVE REACHED')
             session['coming_from_entry'] = 1
             session['action_type'] = 'Премахване'
@@ -741,7 +726,6 @@ def entry():
                                (spec_key, group_key, room_key, time_start, time_end,
                                 subj_key, type_r_key, name_r_key, day_of_week, week_number,
                                 user_for_table))
-                print(sql_reserve)
                 cur.execute(sql_reserve)
                 conn.commit()
                 print('COMMIT REACHED')
